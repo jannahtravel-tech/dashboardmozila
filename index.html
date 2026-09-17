@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selamat Datang Irwan</title>
+<title>Selamat Datang Irwan 😎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -159,11 +159,20 @@
   .tz-row{
     display:flex;justify-content:space-between;align-items:baseline;
     padding:9px 0;border-bottom:1px dashed var(--border);
+    gap:8px;
   }
   .tz-row:last-child{border-bottom:none;}
   .tz-city{font-size:13px;}
   .tz-off{font-size:10.5px;color:var(--muted);}
   .tz-time{font-size:18px;font-weight:700;color:var(--purple);}
+  .tz-right{display:flex;align-items:center;gap:8px;}
+  .tz-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 2px;}
+  .tz-del:hover{color:var(--red);}
+  .tz-add-row{display:flex;gap:8px;margin-bottom:10px;}
+  .tz-select{
+    flex:1;background:var(--panel-2);border:1px solid var(--border);border-radius:7px;
+    color:var(--text);font-family:inherit;font-size:12px;padding:8px 8px;
+  }
 
   /* ---------- Focus timer ---------- */
   .focus-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:100%;}
@@ -309,7 +318,13 @@
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
       <span class="filename">worldclock<span class="ext">.log</span></span>
     </div>
-    <div class="panel-body" id="worldClock"></div>
+    <div class="panel-body">
+      <div class="tz-add-row">
+        <select id="tzAddSelect" class="tz-select"></select>
+        <button class="btn primary" id="tzAddBtn" type="button">+ Tambah</button>
+      </div>
+      <div id="worldClock"></div>
+    </div>
   </div>
 
   <!-- To-do list -->
@@ -409,30 +424,96 @@ safe(function(){
   setInterval(updateHeader, 1000);
 });
 
-/* ---------------- World clock ---------------- */
+/* ---------------- World clock (custom, bisa pilih negara) ---------------- */
 safe(function(){
-  var zones = [
-    {city:'Jakarta', tz:'Asia/Jakarta', off:'GMT+7'},
-    {city:'Berlin', tz:'Europe/Berlin', off:'GMT+1/2'},
-    {city:'Sydney', tz:'Australia/Sydney', off:'GMT+10/11'},
-    {city:'New York', tz:'America/New_York', off:'GMT-5/4'}
+  var TZ_LIST = [
+    {city:'Jakarta', country:'Indonesia (WIB)', tz:'Asia/Jakarta'},
+    {city:'Makassar', country:'Indonesia (WITA)', tz:'Asia/Makassar'},
+    {city:'Jayapura', country:'Indonesia (WIT)', tz:'Asia/Jayapura'},
+    {city:'Mekkah', country:'Arab Saudi', tz:'Asia/Riyadh'},
+    {city:'Dubai', country:'Uni Emirat Arab', tz:'Asia/Dubai'},
+    {city:'Singapura', country:'Singapura', tz:'Asia/Singapore'},
+    {city:'Kuala Lumpur', country:'Malaysia', tz:'Asia/Kuala_Lumpur'},
+    {city:'Bangkok', country:'Thailand', tz:'Asia/Bangkok'},
+    {city:'Tokyo', country:'Jepang', tz:'Asia/Tokyo'},
+    {city:'Seoul', country:'Korea Selatan', tz:'Asia/Seoul'},
+    {city:'Beijing', country:'China', tz:'Asia/Shanghai'},
+    {city:'Mumbai', country:'India', tz:'Asia/Kolkata'},
+    {city:'London', country:'Inggris', tz:'Europe/London'},
+    {city:'Berlin', country:'Jerman', tz:'Europe/Berlin'},
+    {city:'Paris', country:'Prancis', tz:'Europe/Paris'},
+    {city:'Kairo', country:'Mesir', tz:'Africa/Cairo'},
+    {city:'New York', country:'Amerika Serikat', tz:'America/New_York'},
+    {city:'Los Angeles', country:'Amerika Serikat', tz:'America/Los_Angeles'},
+    {city:'Sydney', country:'Australia', tz:'Australia/Sydney'}
   ];
+  var DEFAULT_ZONES = ['Asia/Jakarta','Europe/Berlin','Australia/Sydney','America/New_York'];
+
   var wcEl = document.getElementById('worldClock');
-  wcEl.innerHTML = zones.map(function(z){
-    return '<div class="tz-row">' +
-      '<div><div class="tz-city">' + z.city + '</div><div class="tz-off">' + z.off + '</div></div>' +
-      '<div class="tz-time" id="tz-' + z.city.replace(/\s/g,'') + '">--:--</div></div>';
+  var select = document.getElementById('tzAddSelect');
+  var addBtn = document.getElementById('tzAddBtn');
+
+  function findTz(tz){ for(var i=0;i<TZ_LIST.length;i++){ if(TZ_LIST[i].tz === tz) return TZ_LIST[i]; } return null; }
+
+  function loadZones(){
+    try{
+      var saved = JSON.parse(storage.getItem('irwan_worldclock_zones') || 'null');
+      if(saved && saved.length) return saved;
+    }catch(e){}
+    return DEFAULT_ZONES.slice();
+  }
+  function saveZones(zones){ storage.setItem('irwan_worldclock_zones', JSON.stringify(zones)); }
+
+  select.innerHTML = TZ_LIST.map(function(z){
+    return '<option value="' + z.tz + '">' + z.city + ' — ' + z.country + '</option>';
   }).join('');
-  function updateWorldClock(){
+
+  function renderList(){
+    var zones = loadZones();
+    wcEl.innerHTML = zones.map(function(tz){
+      var info = findTz(tz) || {city: tz, country:''};
+      return '<div class="tz-row" data-tz="' + tz + '">' +
+        '<div><div class="tz-city">' + info.city + '</div><div class="tz-off">' + info.country + '</div></div>' +
+        '<div class="tz-right"><div class="tz-time" id="tzt-' + btoa(tz).replace(/=/g,'') + '">--:--</div>' +
+        '<button class="tz-del" title="hapus">✕</button></div>' +
+      '</div>';
+    }).join('');
+    updateClocks();
+  }
+
+  function updateClocks(){
+    var zones = loadZones();
     var now = new Date();
-    zones.forEach(function(z){
-      var t = new Intl.DateTimeFormat('en-GB', {timeZone:z.tz, hour:'2-digit', minute:'2-digit', hour12:false}).format(now);
-      var el = document.getElementById('tz-' + z.city.replace(/\s/g,''));
-      if(el) el.textContent = t;
+    zones.forEach(function(tz){
+      var el = document.getElementById('tzt-' + btoa(tz).replace(/=/g,''));
+      if(!el) return;
+      try{
+        el.textContent = new Intl.DateTimeFormat('en-GB', {timeZone:tz, hour:'2-digit', minute:'2-digit', hour12:false}).format(now);
+      }catch(e){ el.textContent = '--:--'; }
     });
   }
-  updateWorldClock();
-  setInterval(updateWorldClock, 1000);
+
+  addBtn.addEventListener('click', function(){
+    var tz = select.value;
+    var zones = loadZones();
+    if(zones.indexOf(tz) === -1){
+      zones.push(tz);
+      saveZones(zones);
+      renderList();
+    }
+  });
+
+  wcEl.addEventListener('click', function(e){
+    if(!e.target.classList.contains('tz-del')) return;
+    var row = e.target.closest('.tz-row');
+    var tz = row.dataset.tz;
+    var zones = loadZones().filter(function(z){ return z !== tz; });
+    saveZones(zones);
+    renderList();
+  });
+
+  renderList();
+  setInterval(updateClocks, 1000);
 });
 
 /* ---------------- Focus / break timer ---------------- */
