@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Selamat Datang Irwan 😎</title>
+<title>Selamat Datang Irwan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -279,7 +279,7 @@
   </div>
 
   <!-- Focus / break timer -->
-  <div class="panel w4" style="grid-row: span 2;">
+  <div class="panel w4">
     <div class="panel-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
       <span class="filename">focus<span class="ext">.session</span></span>
@@ -298,32 +298,6 @@
         <button class="btn" id="focusReset" type="button">Reset</button>
       </div>
       <div class="focus-count" id="focusCount">sesi selesai hari ini: 0</div>
-    </div>
-  </div>
-
-  <!-- Weather forecast -->
-  <div class="panel w4">
-    <div class="panel-head">
-      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="filename">weather<span class="ext">.forecast</span></span>
-    </div>
-    <div class="panel-body" id="wxBody">
-      <div class="wx-err">memuat ramalan cuaca...</div>
-    </div>
-  </div>
-
-  <!-- World clock -->
-  <div class="panel w4">
-    <div class="panel-head">
-      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="filename">worldclock<span class="ext">.log</span></span>
-    </div>
-    <div class="panel-body">
-      <div class="tz-add-row">
-        <select id="tzAddSelect" class="tz-select"></select>
-        <button class="btn primary" id="tzAddBtn" type="button">+ Tambah</button>
-      </div>
-      <div id="worldClock"></div>
     </div>
   </div>
 
@@ -353,10 +327,13 @@
       <div class="link-grid">
         <a class="link-item" href="https://business.facebook.com/adsmanager" target="_blank" rel="noopener"><span class="ico">📊</span>Ads Manager</a>
         <a class="link-item" href="https://docs.google.com/spreadsheets" target="_blank" rel="noopener"><span class="ico">📈</span>Sheets</a>
+        <a class="link-item" href="https://docs.google.com/document" target="_blank" rel="noopener"><span class="ico">📝</span>Docs</a>
         <a class="link-item" href="https://www.canva.com" target="_blank" rel="noopener"><span class="ico">🎨</span>Canva</a>
         <a class="link-item" href="https://drive.google.com" target="_blank" rel="noopener"><span class="ico">📁</span>Drive</a>
         <a class="link-item" href="https://mail.google.com" target="_blank" rel="noopener"><span class="ico">✉️</span>Gmail</a>
         <a class="link-item" href="https://web.whatsapp.com" target="_blank" rel="noopener"><span class="ico">💬</span>WhatsApp</a>
+        <a class="link-item" href="https://github.com" target="_blank" rel="noopener"><span class="ico">🐙</span>GitHub</a>
+        <a class="link-item" href="https://dash.cloudflare.com" target="_blank" rel="noopener"><span class="ico">☁️</span>Cloudflare</a>
       </div>
     </div>
   </div>
@@ -370,6 +347,32 @@
     <div class="panel-body">
       <textarea class="notes" id="notesArea" placeholder="scratchpad... ide campaign, catatan meeting"></textarea>
       <div class="notes-hint">tersimpan otomatis di browser ini</div>
+    </div>
+  </div>
+
+  <!-- Weather forecast -->
+  <div class="panel w6">
+    <div class="panel-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="filename">weather<span class="ext">.forecast</span></span>
+    </div>
+    <div class="panel-body" id="wxBody">
+      <div class="wx-err">memuat ramalan cuaca...</div>
+    </div>
+  </div>
+
+  <!-- World clock -->
+  <div class="panel w6">
+    <div class="panel-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="filename">worldclock<span class="ext">.log</span></span>
+    </div>
+    <div class="panel-body">
+      <div class="tz-add-row">
+        <select id="tzAddSelect" class="tz-select"></select>
+        <button class="btn primary" id="tzAddBtn" type="button">+ Tambah</button>
+      </div>
+      <div id="worldClock"></div>
     </div>
   </div>
 
